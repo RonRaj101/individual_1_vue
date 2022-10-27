@@ -120,13 +120,13 @@
                                     <nav aria-label="...">
                                         <ul class="pagination pagination-sm">
                                           <li class="page-item" aria-current="page">
-                                            <button class="btn btn-light btn-sm">-</button>
+                                            <button @click="modifyCart(item.subject,'-')" :disabled="item.quantity == 0" class="btn btn-light btn-sm">-</button>
                                           </li>
                                           <li class="page-item active px-2 mt-1">
                                             {{ item.quantity }}
                                         </li>
                                           <li class="page-item">
-                                            <button class="btn btn-light btn-sm">+</button>
+                                            <button @click="modifyCart(item.subject,'+')" :disabled="item.quantity >= item.total_stock"  class="btn btn-light btn-sm">+</button>
                                         </li>
                                         </ul>
                                       </nav>
@@ -191,6 +191,8 @@
                             'description': 'Basics of Arithmetic & Algebra',
                             'location': 'London',
                             'price': 49,
+                            'total_stock': 5,
+                             //current stock
                             'stock': 5,
                             'image_url': 'images/undraw_mathematics_-4-otb.svg'
                         },
@@ -199,6 +201,8 @@
                             'description': 'Basics of Grammar & Pronounciation',
                             'location': 'Newcastle',
                             'price': 29,
+                            'total_stock':5,
+                            //current stock
                             'stock': 5,
                             'image_url': 'images/undraw_things_to_say_re_jpcg.svg'
                         }
@@ -217,14 +221,36 @@
                     let result = this.items.findIndex((obj => obj.subject == subject));
                     this.items[result].stock--; 
 
-                    //increment the quant
+                    //increment the quantity
                     let cartItem = this.cart.findIndex((obj => obj.subject == subject));
                     this.cart[cartItem].quantity++;
                     
-                    
                 },
                 //method for changing cart number
-                
+                modifyCart(subject, operation){
+                    let result = this.items.findIndex((obj => obj.subject == subject));
+                    let cartItem = this.cart.findIndex((obj => obj.subject == subject));
+
+                    if(operation == "+"){
+                    
+                        //decrease stock   
+                        this.items[result].stock--; 
+
+                        //increment the quantity
+                        this.cart[cartItem].quantity++;
+
+                    }
+
+                    else if(operation == "-"){
+
+                        //decrease stock 
+                        this.items[result].stock++; 
+
+                        //increment the quantity
+                        this.cart[cartItem].quantity--;
+
+                    }
+                }
             }
         }).mount('#list')
     </script>
