@@ -104,9 +104,17 @@
          <!-- Cart Section -->
 
          <div class="row mt-5">
-            <div class="col-lg-6 col-md-12 col-sm-12" v-for="item in cart">
+
+            
+            <h1 style="text-align: center;">CART ({{ cart.filter(obj => obj.quantity > 0).length }})</h1>
+            <div style="text-align: center;" v-if="cart.filter(obj => obj.quantity > 0).length == 0">
+                <h2 class="text-muted">No Items in Cart</h2>
+            </div>
+
+            <div class="col-lg-6 col-md-12 col-sm-12 mt-5" v-for="item in cart" >
     
             <div v-if="item.quantity > 0">
+
                 <div class="card mb-3 bg-dark text-light position-relative" style="max-width: 540px;">
                     <div class="row g-1">
                         <div class="col-md-6 col-lg-4">
@@ -155,6 +163,7 @@
                 </div>
             </div>
 
+            
     
             </div>
     
@@ -167,6 +176,8 @@
 
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+   
+
     <!-- JavaScript Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
@@ -205,8 +216,18 @@
                             //current stock
                             'stock': 5,
                             'image_url': 'images/undraw_things_to_say_re_jpcg.svg'
+                        },
+                        {
+                            'subject': 'Economics',
+                            'description': 'Get Started with Macro and Micro Economics',
+                            'location': 'Birmingham',
+                            'price': 99,
+                            'total_stock':5,
+                            //current stock
+                            'stock': 5,
+                            'image_url': 'images/undraw_discount_d-4-bd.svg'
                         }
-
+                        
                     ],
 
                     cart: [
