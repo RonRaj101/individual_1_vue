@@ -11,14 +11,19 @@
         integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <style>
-        .card {
-            
+        .card { 
             left: 50%;
             transform: translateX(-50%);
         }
 
         .card-body {
             padding: 2em;
+        }
+
+        .card-img-top{
+            display: inline; 
+            max-width: 15rem; 
+            height: 250px;
         }
     </style>
 </head>
@@ -31,10 +36,10 @@
     
         <!-- Filter Section -->
        
-             <form class="d-inline-flex container-fluid border border-dark p-3">
-                <select class="form-select" aria-label="Filter By">
-                    <option selected>Filter By</option>
-                    <option value="subject">Subject</option>
+             <form @change.prevent="filterBy" class="d-inline-flex container-fluid border border-dark p-3">
+                <select v-model="filterValue"  class="form-select" aria-label="Filter By">
+                    <option  disabled selected>Filter By</option>
+                    <option value="subject" selected>Subject</option>
                     <option value="location">Location</option>
                     <option value="price">Price</option>
                     <option value="spaces">Spaces Available</option>
@@ -42,29 +47,32 @@
 
                 <div class="form-check">
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="asc-radio" value="asc">
+                    <input class="form-check-input" v-model="checkBox" type="radio" name="inlineRadioOptions" id="asc-radio" value="asc" checked>
                     <label class="form-check-label" for="inlineRadio1">Ascending</label>
                   </div>
                   <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="desc-radio" value="desc">
+                    <input class="form-check-input" v-model="checkBox"  type="radio" name="inlineRadioOptions" id="desc-radio" value="desc" >
                     <label class="form-check-label" for="inlineRadio2">Descending</label>
                   </div>
                 </div>
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <input class="form-control me-2" v-model="searchQuery" type="search" placeholder="Search..." aria-label="Search">
               </form>
        
 
         <!-- Courses Section -->
        
          <div class="row mt-5">
-            <div class="col-lg-6 col-md-12 col-sm-12" v-for="item in items">
-    
-                <div class="card mb-3 bg-dark text-light position-relative" style="max-width: 540px;">
-                    <div class="row g-1">
-                        <div class="col-md-6 col-lg-4">
-                            <img :src="item.image_url" class="img-fluid img-rounded p-3 mt-3" alt="...">
+            
+
+              
+            <div class="col-lg-3 col-md-6 col-sm-12 card-group" v-for="item in items">
+
+                <div class="card mb-3 bg-dark text-light" >
+                    
+                        <div class="row">
+                            <img :src="item.image_url" class="img-responsive img-rounded p-3 mt-3 card-img-top mx-auto" alt="...">
                         </div>
-                        <div class="col-md-6 col-lg-8">
+                        <div class="row">
                             <div class="card-body">
                                 <h5 class="card-title" style="font-weight: bolder;">{{ item.subject }}</h5>
                                 <p class="">{{ item.description }}</p>
@@ -75,12 +83,12 @@
                                     <button @click="addToCart(item.subject)" :disabled="item.stock <= 0" class="btn btn-outline-light">Add To Cart </button>
                                 <hr>
                                 <div class="row">
-                                    <div class="col">
+                                    <div class="col-6">
                                         <p class="card-text text-success" style="font-weight: bold; font-size: large;">
                                             &pound;{{
                                             item.price }}</p>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-6">
                                         <p class="card-text" style="font-weight:bold; float:right ;"><i
                                                 class="bi bi-geo-alt"></i> <em class="">{{ item.location }}</em> </p>
                                     </div>
@@ -89,7 +97,7 @@
     
                             </div>
                         </div>
-                    </div>
+                    
                 </div>
     
             </div>
@@ -106,21 +114,21 @@
          <div class="row mt-5">
 
             
-            <h1 style="text-align: center;">CART ({{ cart.filter(obj => obj.quantity > 0).length }})</h1>
-            <div style="text-align: center;" v-if="cart.filter(obj => obj.quantity > 0).length == 0">
+            <h1 style="text-align: center;">CART ({{ cartCount }})</h1>
+            <div style="text-align: center;" v-if="cartCount == 0">
                 <h2 class="text-muted">No Items in Cart</h2>
             </div>
 
-            <div class="col-lg-6 col-md-12 col-sm-12 mt-5" v-for="item in cart" >
+            <div class="col-lg-4 col-md-6 col-sm-12 mt-3" v-for="item in cart" >
     
-            <div v-if="item.quantity > 0">
+            <div v-show="item.quantity > 0">
 
-                <div class="card mb-3 bg-dark text-light position-relative" style="max-width: 540px;">
-                    <div class="row g-1">
-                        <div class="col-md-6 col-lg-4">
-                            <img :src="item.image_url" class="img-fluid img-rounded p-3 mt-3" alt="...">
+                <div class="card mb-3 bg-dark text-light position-relative" style="">
+                    
+                        <div class="row">
+                            <img :src="item.image_url" class="img-responsive img-rounded p-3 mt-3 card-img-top mx-auto" alt="...">
                         </div>
-                        <div class="col-md-6 col-lg-8">
+                        <div class="row">
                             <div class="card-body">
                                 <h5 class="card-title" style="font-weight: bolder;">{{ item.subject }}</h5>
                                 <p class="">{{ item.description }}</p>
@@ -159,7 +167,7 @@
     
                             </div>
                         </div>
-                    </div>
+                   
                 </div>
             </div>
 
@@ -182,57 +190,31 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
         crossorigin="anonymous"></script>
+     <script src="courses.js"></script>   
     <script>
+
         const { createApp } = Vue
+       
 
         createApp({
             mounted() {
+                
                 this.cart = [...this.items];
                 this.cart.forEach(element => {
-                    element['quantity'] = 0;
+                    element['quantity'] = null;
                 });
                 console.log(this.cart);
             },
+            
             data() {
                 return {
-                    
-                    items: [
-                        {
-                            'subject': 'Mathematics',
-                            'description': 'Basics of Arithmetic & Algebra',
-                            'location': 'London',
-                            'price': 49,
-                            'total_stock': 5,
-                             //current stock
-                            'stock': 5,
-                            'image_url': 'images/undraw_mathematics_-4-otb.svg'
-                        },
-                        {
-                            'subject': 'English',
-                            'description': 'Basics of Grammar & Pronounciation',
-                            'location': 'Newcastle',
-                            'price': 29,
-                            'total_stock':5,
-                            //current stock
-                            'stock': 5,
-                            'image_url': 'images/undraw_things_to_say_re_jpcg.svg'
-                        },
-                        {
-                            'subject': 'Economics',
-                            'description': 'Get Started with Macro and Micro Economics',
-                            'location': 'Birmingham',
-                            'price': 99,
-                            'total_stock':5,
-                            //current stock
-                            'stock': 5,
-                            'image_url': 'images/undraw_discount_d-4-bd.svg'
-                        }
-                        
-                    ],
+                    items: lessons,
+                    cart: [],
 
-                    cart: [
-                        
-                    ]
+                    //filters
+                    filterValue: null,
+                    checkBox: true,
+                    searchQuery: ""
                 }
             },
             methods: {
@@ -246,8 +228,11 @@
                     let cartItem = this.cart.findIndex((obj => obj.subject == subject));
                     this.cart[cartItem].quantity++;
                     
+                    
+
                 },
-                //method for changing cart number
+
+                //method for changing items in cart (+ or - quantity)
                 modifyCart(subject, operation){
                     let result = this.items.findIndex((obj => obj.subject == subject));
                     let cartItem = this.cart.findIndex((obj => obj.subject == subject));
@@ -271,6 +256,15 @@
                         this.cart[cartItem].quantity--;
 
                     }
+                },
+
+                filterBy(){
+                    console.log(this.filterValue, this.checkBox, this.searchQuery);
+                }
+            },
+            computed:{
+                cartCount(){
+                    return this.cart.filter(obj => obj.quantity > 0).length;
                 }
             }
         }).mount('#list')
