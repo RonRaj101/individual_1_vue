@@ -36,13 +36,13 @@
     
         <!-- Filter Section -->
        
-             <form @change.prevent="filterBy" class="d-inline-flex container-fluid border border-dark p-3">
+             <form  style="position: fixed; top: 0; left: 0; z-index: 1000; border:2px dotted white;" class="d-inline-flex container-fluid bg-dark text-light p-3 mb-5">
                 <select v-model="filterValue"  class="form-select" aria-label="Filter By">
-                    <option  disabled selected>Filter By</option>
+                    <option disabled selected>Filter By</option>
                     <option value="subject" selected>Subject</option>
                     <option value="location">Location</option>
                     <option value="price">Price</option>
-                    <option value="spaces">Spaces Available</option>
+                    <option value="stock">Spaces Available</option>
                   </select>
 
                 <div class="form-check">
@@ -57,15 +57,31 @@
                 </div>
                 <input class="form-control me-2" v-model="searchQuery" type="search" placeholder="Search..." aria-label="Search">
               </form>
+
+              <!-- Modal -->
+              <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="staticBackdropLabel">Order Confirmation</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      Order Confirmed
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary">Understood</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
        
 
         <!-- Courses Section -->
-       
          <div class="row mt-5">
-            
-
-              
-            <div class="col-lg-3 col-md-6 col-sm-12 card-group" v-for="item in items">
+        
+            <div class="col-lg-3 col-md-6 col-sm-12 card-group" v-for="item in filteredProducts">
 
                 <div class="card mb-3 bg-dark text-light" >
                     
@@ -177,6 +193,23 @@
     
          </div>
 
+         <hr>
+         <!-- Checkout Section -->
+         <div class="row mt-5">
+
+            <h1 style="text-align: center;">Check Out</h1>
+
+            <div class="row">
+                <div class="col">
+                  <input type="text" v-model="CO_name" class="form-control" placeholder="Full Name" aria-label="Full name">
+                </div>
+                <div class="col">
+                  <input type="number" v-model="CO_phone" class="form-control" placeholder="Phone Number" aria-label="Number">
+                </div>
+                <button class="btn btn-dark col" data-bs-toggle="modal" data-bs-target="#staticBackdrop" disabled="true">Confirm Order</button>
+              </div>
+              
+         </div>
 
 
     </div>
@@ -198,7 +231,6 @@
 
         createApp({
             mounted() {
-                
                 this.cart = [...this.items];
                 this.cart.forEach(element => {
                     element['quantity'] = null;
@@ -213,8 +245,12 @@
 
                     //filters
                     filterValue: null,
-                    checkBox: true,
-                    searchQuery: ""
+                    checkBox: 'asc',
+                    searchQuery: "",
+
+                    CO_name:'',
+                    CO_phone:null,
+                    CO_btn: false,
                 }
             },
             methods: {
@@ -227,8 +263,6 @@
                     //increment the quantity
                     let cartItem = this.cart.findIndex((obj => obj.subject == subject));
                     this.cart[cartItem].quantity++;
-                    
-                    
 
                 },
 
@@ -258,13 +292,38 @@
                     }
                 },
 
-                filterBy(){
-                    console.log(this.filterValue, this.checkBox, this.searchQuery);
-                }
+                
             },
             computed:{
                 cartCount(){
                     return this.cart.filter(obj => obj.quantity > 0).length;
+                },
+                filteredProducts(){
+                    if(this.searchQuery == "" && this.filterValue == null){
+                        return this.items;
+                    }
+                    else{
+                        if(this.filterValue == 'subject' || this.filterValue == 'location'){
+                            if(this.checkBox == "asc"){
+                                return ( this.items.filter((obj) => obj.subject.toLowerCase().includes(this.searchQuery.toLowerCase()) 
+                                || obj.description.toLowerCase().includes(this.searchQuery.toLowerCase())).sort((a,b) => a[this.filterValue].toLowerCase() < b[this.filterValue].toLowerCase() ? -1 : 0) );
+                            }
+                            else if(this.checkBox == "desc"){
+                                return ( this.items.filter((obj) => obj.subject.toLowerCase().includes(this.searchQuery.toLowerCase()) 
+                                || obj.description.toLowerCase().includes(this.searchQuery.toLowerCase())).sort((a,b) => b[this.filterValue].toLowerCase() < a[this.filterValue].toLowerCase() ? -1 : 0) );
+                            }
+                        }
+                        else{
+                            if(this.checkBox == "asc"){
+                                return this.items.filter((obj) => obj.subject.toLowerCase().includes(this.searchQuery.toLowerCase()) 
+                                || obj.description.toLowerCase().includes(this.searchQuery.toLowerCase())).sort((a,b) => a[this.filterValue] - b[this.filterValue]);
+                            }
+                            else if(this.checkBox == "desc"){
+                                return this.items.filter((obj) => obj.subject.toLowerCase().includes(this.searchQuery.toLowerCase()) 
+                                || obj.description.toLowerCase().includes(this.searchQuery.toLowerCase())).sort((a,b) => b[this.filterValue] - a[this.filterValue]);
+                            }
+                        }
+                    }
                 }
             }
         }).mount('#list')
