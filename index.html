@@ -199,14 +199,14 @@
 
             <h1 style="text-align: center;">Check Out</h1>
 
-            <div class="row">
+            <div class="row" @change.prevent="formCheck">
                 <div class="col">
                   <input type="text" v-model="CO_name" class="form-control" placeholder="Full Name" aria-label="Full name">
                 </div>
                 <div class="col">
                   <input type="number" v-model="CO_phone" class="form-control" placeholder="Phone Number" aria-label="Number">
                 </div>
-                <button class="btn btn-dark col" data-bs-toggle="modal" data-bs-target="#staticBackdrop" disabled="true">Confirm Order</button>
+                <button class="btn btn-dark col" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="btn_order" disabled>Confirm Order</button>
               </div>
               
          </div>
@@ -250,7 +250,7 @@
 
                     CO_name:'',
                     CO_phone:null,
-                    CO_btn: false,
+                    CO_disabled: true,
                 }
             },
             methods: {
@@ -326,6 +326,12 @@
                     }
                 },
                 formCheck(){
+                    if(this.CO_name !== '' && this.CO_phone != '' && this.cartCount > 0){
+                        //checking if it is all letters
+                        //if(/^[A-Za-z]*$/.test(this.CO_name)){
+                            document.getElementById("btn_order").disabled = false;
+                        //}
+                    }
                     
                 }
             }
